@@ -19,6 +19,13 @@ class DesarrolladoresBugsProblem:
 
         # capacidad máxima del vehículo
         self.capacidad = 2
+        self.costos = {
+            (1, 0): 2,  # 1 Dev
+            (2, 0): 4,  # 2 Dev
+            (0, 1): 1,  # 1 Bug
+            (0, 2): 2,  # 2 Bugs
+            (1, 1): 3   # 1 Dev y 1 Bug
+        }
 
     # --------------------------------
     # Estado inicial
@@ -45,22 +52,18 @@ class DesarrolladoresBugsProblem:
         dev_der = self.total_dev - dev_izq
         bugs_der = self.total_bugs - bugs_izq
 
-        # Cantidades negativas
         if dev_izq < 0 or bugs_izq < 0:
             return False
 
         if dev_der < 0 or bugs_der < 0:
             return False
 
-        # Fuera de límites
         if dev_izq > self.total_dev or bugs_izq > self.total_bugs:
             return False
 
-        # Restricción de seguridad en izquierda
         if dev_izq > 0 and bugs_izq > dev_izq:
             return False
 
-        # Restricción de seguridad en derecha
         if dev_der > 0 and bugs_der > dev_der:
             return False
 
@@ -76,7 +79,6 @@ class DesarrolladoresBugsProblem:
 
         sucesores = []
 
-        # combinaciones permitidas
         movimientos = [
             (1, 0),  # 1 desarrollador
             (2, 0),  # 2 desarrolladores
@@ -87,14 +89,11 @@ class DesarrolladoresBugsProblem:
 
         for d, b in movimientos:
 
-            # verificar capacidad del vehículo
             if d + b > self.capacidad:
                 continue
 
-            # si el vehículo está en la izquierda
             if vehiculo == 0:
 
-                # verificar que haya suficientes elementos
                 if dev_izq < d or bugs_izq < b:
                     continue
 
@@ -106,13 +105,11 @@ class DesarrolladoresBugsProblem:
 
                 accion = f"Enviar {d} Dev y {b} Bugs"
 
-            # si el vehículo está en la derecha
             else:
 
                 dev_der = self.total_dev - dev_izq
                 bugs_der = self.total_bugs - bugs_izq
 
-                # verificar que haya suficientes elementos
                 if dev_der < d or bugs_der < b:
                     continue
 
@@ -124,11 +121,13 @@ class DesarrolladoresBugsProblem:
 
                 accion = f"Regresar {d} Dev y {b} Bugs"
 
-            # validar estado antes de agregarlo
             if self.es_estado_valido(nuevo_estado):
 
+                # cálculo del costo según tu tabla
+                costo = (2 * d) + (1 * b)
+
                 sucesores.append(
-                    (nuevo_estado, accion, 1)
+                    (nuevo_estado, accion, costo)
                 )
 
         return sucesores
@@ -139,5 +138,23 @@ class DesarrolladoresBugsProblem:
 
     def getCostOfActions(self, actions):
 
-        # costo uniforme
-        return len(actions)
+        costo_total = 0
+
+        for accion in actions:
+
+            if "1 Dev y 0 Bugs" in accion:
+                costo_total += self.costos[(1,0)]
+
+            elif "2 Dev y 0 Bugs" in accion:
+                costo_total += self.costos[(2,0)]
+
+            elif "0 Dev y 1 Bugs" in accion:
+                costo_total += self.costos[(0,1)]
+
+            elif "0 Dev y 2 Bugs" in accion:
+                costo_total += self.costos[(0,2)]
+
+            elif "1 Dev y 1 Bugs" in accion:
+                costo_total += self.costos[(1,1)]
+
+        return costo_total
