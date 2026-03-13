@@ -4,7 +4,7 @@
 
 # Ejecuta DFS/BFSUCS/A* sobre el problema de las jarras.
 
-from search import dfs, bfs, ucs, astar, nullHeuristic
+from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs
 from problems.Desarroladores import DesarrolladoresBugsProblem
 
 # Definición de un problema de grafo simple para probar los algoritmos de búsqueda.
@@ -73,6 +73,9 @@ def main():
     sol_bfs = bfs(problema)
     sol_ucs = ucs(problema)
     sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
+    sol_iddfs = iddfs(problema, 15)
+    sol_dls = dls(problema, 2)
+
     """
     print("========================================")
     print(" Problema de las Jarras")
@@ -90,18 +93,21 @@ def main():
     print("Costo:", problema.getCostOfActions(sol_ucs))
     print()
 
-
     # Si quieres ver DFS también (ojo: puede dar rutas largas dependiendo del orden de sucesores)
     sol_dfs = dfs(problema)
     print("DFS (puede no ser óptimo):")
     print(sol_dfs)
     print("Costo:", problema.getCostOfActions(sol_dfs))
+    print()
 
-    print("DFS (puede no ser óptimo):")
+    print("A* (puede no ser óptimo):")
     print(sol_astar)
     print("Costo:", problema.getCostOfActions(sol_astar))
+    print()
 
-
+    print("IDDFS")
+    print(sol_iddfs)
+    print("Costo:", problema.getCostOfActions(sol_iddfs))
 
 if __name__ == "__main__":
     main()
