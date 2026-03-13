@@ -26,7 +26,7 @@ class SearchProblem:
     def getCostOfActions(self, actions):
         raise NotImplementedError
 
-
+#DFS con nodos 
 def depthFirstSearch(problem):
     """
     DFS: usa Stack (LIFO). No garantiza optimalidad.
@@ -34,14 +34,20 @@ def depthFirstSearch(problem):
     """
     frontera = util.Stack()
     visitados = set()
+    nodos_generados = 0
+    nodos_expandidos = 0
 
     inicio = problem.getStartState()
     frontera.push((inicio, []))  # (estado, camino)
+    #Aumentar los nodos expandidos al realizar pop
+    nodos_expandidos += 1
+
 
     while not frontera.isEmpty():
         estado, camino = frontera.pop()
 
         if problem.isGoalState(estado):
+            print("Nodos genrados son: ", nodos_generados, "Nodos expandidos: ",nodos_expandidos)
             return camino
 
         if estado in visitados:
@@ -51,8 +57,32 @@ def depthFirstSearch(problem):
         for sucesor, accion, costo in problem.getSuccessors(estado):
             if sucesor not in visitados:
                 frontera.push((sucesor, camino + [accion]))
+                nodos_generados += 1
 
-    return []
+
+    return [], nodos_generados, nodos_expandidos
+"""
+    implementacion con DFS usando, un arbol sin visitados  
+"""
+def sin_visitados_dfs(problem):
+    frontera = util.Stack()
+    inicio = problem.getStartState()
+    frontera.push((inicio, []))
+    nodos_generados = 0
+    nodos_expandidos = 0
+
+    while not frontera.isEmpty():
+        estado, camino = frontera.pop()
+        nodos_expandidos += 1
+        if problem.isGoalState(estado):
+            print("Nodos genrados son: ", nodos_generados, "Nodos expandidos: ",nodos_expandidos)
+            return camino
+        for sucesor, accion, costo in problem.getSuccessors(estado):
+            frontera.push((sucesor, camino + [accion]))
+            nodos_generados += 1
+   
+    return [], nodos_generados, nodos_expandidos
+
 
 
 def breadthFirstSearch(problem):
@@ -159,6 +189,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
 # Alias
 dfs = depthFirstSearch
+dfs_sin = sin_visitados_dfs
 bfs = breadthFirstSearch
 ucs = uniformCostSearch
 astar = aStarSearch
