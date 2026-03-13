@@ -5,8 +5,7 @@
 # Ejecuta DFS/BFSUCS/A* sobre el problema de las jarras.
 
 from search import dfs, bfs, ucs, astar, nullHeuristic
-from problems.jarras import JarrasProblem
-
+from problems.Desarroladores import DesarrolladoresBugsProblem
 
 # Definición de un problema de grafo simple para probar los algoritmos de búsqueda.
 class ProblemaGrafo:
@@ -66,21 +65,21 @@ class ProblemaGrafo:
 
 
 
-# Probamos con el problema de las jarras. 
+# Probamos con el problema de las jarras.
 def main():
     # Ejemplo clásico: jarra A de 5L, jarra B de 3L, meta (2,0)
-    problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
-
+    #problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
+    problema = DesarrolladoresBugsProblem()
     sol_bfs = bfs(problema)
     sol_ucs = ucs(problema)
     sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
-
+    """
     print("========================================")
     print(" Problema de las Jarras")
     print(" Capacidad A =", problema.capA, " Capacidad B =", problema.capB)
     print(" Inicio =", problema.start, " Meta =", problema.goal)
     print("========================================\n")
-
+    """
     print("BFS (menos pasos):")
     print(sol_bfs)
     print("Costo:", problema.getCostOfActions(sol_bfs))
