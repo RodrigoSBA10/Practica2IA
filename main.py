@@ -97,6 +97,11 @@ def main():
     print(sol_dfs)
     print("Costo:", problema.getCostOfActions(sol_dfs))
 
+    print("DFS (puede no ser óptimo):")
+    print(sol_astar)
+    print("Costo:", problema.getCostOfActions(sol_astar))
+
+
 
 if __name__ == "__main__":
     main()
