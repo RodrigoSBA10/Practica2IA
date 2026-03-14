@@ -49,7 +49,6 @@ class ProblemaGrafo:
             total += self.costos_accion[a]
         return total
 
-
 # Probamos los algoritmos de búsqueda sobre el grafo definido.
 #def main():
 #    problema = ProblemaGrafo()
@@ -101,19 +100,11 @@ def main():
 
 
     # Si quieres ver DFS también (ojo: puede dar rutas largas dependiendo del orden de sucesores)
-    sol_dfs = dfs(problema)
+    sol_dfs= dfs(problema)
     print("DFS (puede no ser óptimo):")
     print(sol_dfs)
     print("Costo:", problema.getCostOfActions(sol_dfs))
     print()
-
-
-    #DFS sin visitados
-    dfs_sin_vis = dfs_sin(problema)
-    print("DFS Arbol sin visitados")
-    print(dfs_sin_vis)
-    print("Costo:", problema.getCostOfActions(dfs_sin_vis)) 
-   
 
     print("A* (puede no ser óptimo):")
     print(sol_astar)
@@ -123,6 +114,15 @@ def main():
     print("IDDFS")
     print(sol_iddfs)
     print("Costo:", problema.getCostOfActions(sol_iddfs))
+
+    
+    #DFS sin visitados
+    dfs_sin_vis = dfs_sin(problema)
+    print("DFS Arbol sin visitados")
+    print(dfs_sin_vis)
+    print("Costo:", problema.getCostOfActions(dfs_sin_vis)) 
+
+    
 
 
 if __name__ == "__main__":

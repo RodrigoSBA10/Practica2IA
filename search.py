@@ -52,8 +52,7 @@ def depthFirstSearch(problem):
         estado, camino = frontera.pop()
 
         if problem.isGoalState(estado):
-            print("Nodos genrados son: ", nodos_generados, "Nodos expandidos: ",nodos_expandidos)
-            return camino
+            return camino, nodos_generados, nodos_expandidos
 
         if estado in visitados:
             continue
@@ -80,8 +79,7 @@ def sin_visitados_dfs(problem):
         estado, camino = frontera.pop()
         nodos_expandidos += 1
         if problem.isGoalState(estado):
-            print("Nodos genrados son: ", nodos_generados, "Nodos expandidos: ",nodos_expandidos)
-            return camino
+            return camino, nodos_generados, nodos_expandidos
         for sucesor, accion, costo in problem.getSuccessors(estado):
             frontera.push((sucesor, camino + [accion]))
             nodos_generados += 1
