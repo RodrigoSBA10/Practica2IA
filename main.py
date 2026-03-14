@@ -7,6 +7,7 @@
 from search import dfs, bfs, ucs, astar,dfs_sin, nullHeuristic
 from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs
 from problems.Desarroladores import DesarrolladoresBugsProblem
+from problems.jarras import JarrasProblem
 
 # Definición de un problema de grafo simple para probar los algoritmos de búsqueda.
 class ProblemaGrafo:
@@ -68,29 +69,33 @@ class ProblemaGrafo:
 # Probamos con el problema de las jarras.
 def main():
     # Ejemplo clásico: jarra A de 5L, jarra B de 3L, meta (2,0)
-    #problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
-    problema = DesarrolladoresBugsProblem()
-    sol_bfs = bfs(problema)
-    sol_ucs = ucs(problema)
+    problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
+    #problema = DesarrolladoresBugsProblem()
+    sol_bfs,gen1, exp1 = bfs(problema)
+    sol_ucs,gen2, exp2 = ucs(problema)
     sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
-    sol_iddfs = iddfs(problema, 15)
+    sol_iddfs,gen3, exp3 = iddfs(problema, 15)
     sol_dls = dls(problema, 2)
 
-    """
+    
     print("========================================")
     print(" Problema de las Jarras")
     print(" Capacidad A =", problema.capA, " Capacidad B =", problema.capB)
     print(" Inicio =", problema.start, " Meta =", problema.goal)
     print("========================================\n")
-    """
+    
     print("BFS (menos pasos):")
     print(sol_bfs)
     print("Costo:", problema.getCostOfActions(sol_bfs))
+    print("Nodos generados:", gen1)
+    print("Nodos expandidos:", exp1)
     print()
 
     print("UCS (menor costo):")
     print(sol_ucs)
     print("Costo:", problema.getCostOfActions(sol_ucs))
+    print("Nodos generados:", gen2)
+    print("Nodos expandidos:", exp2)
     print()
 
 
@@ -100,11 +105,12 @@ def main():
 
 
     # Si quieres ver DFS también (ojo: puede dar rutas largas dependiendo del orden de sucesores)
-    sol_dfs= dfs(problema)
+    sol_dfs, gen, exp = dfs(problema)
     print("DFS (puede no ser óptimo):")
     print(sol_dfs)
     print("Costo:", problema.getCostOfActions(sol_dfs))
-    print()
+    print("Nodos generados:", gen)
+    print("Nodos expandidos:", exp)
 
     print("A* (puede no ser óptimo):")
     print(sol_astar)
@@ -114,14 +120,18 @@ def main():
     print("IDDFS")
     print(sol_iddfs)
     print("Costo:", problema.getCostOfActions(sol_iddfs))
+    print("Nodos generados:", gen3)
+    print("Nodos expandidos:", exp3)
+    print()
 
     
     #DFS sin visitados
+    """
     dfs_sin_vis = dfs_sin(problema)
     print("DFS Arbol sin visitados")
     print(dfs_sin_vis)
     print("Costo:", problema.getCostOfActions(dfs_sin_vis)) 
-
+    """
     
 
 
