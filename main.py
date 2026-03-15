@@ -69,8 +69,8 @@ class ProblemaGrafo:
 # Probamos con el problema de las jarras.
 def main():
     # Ejemplo clásico: jarra A de 5L, jarra B de 3L, meta (2,0)
-    problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
-    #problema = DesarrolladoresBugsProblem()
+    #problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
+    problema = DesarrolladoresBugsProblem()
     sol_bfs = bfs(problema)
     sol_ucs = ucs(problema)
     sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
