@@ -4,7 +4,7 @@
 
 # Ejecuta DFS/BFSUCS/A* sobre el problema de las jarras.
 
-from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs, heuristicaDesarrolladores, imprimir_solucion, heuriticaManhattan, heuristicaFueraLugar
+from search import dfs, bfs, ucs, astar, bestfs, nullHeuristic, dls, iddfs, heuristicaDesarrolladores, imprimir_solucion, heuriticaManhattan, heuristicaFueraLugar
 from problems.jarras import JarrasProblem
 from problems.Desarroladores import DesarrolladoresBugsProblem
 from problems.OchoPuzzle import OchoPuzzle
@@ -77,6 +77,36 @@ def main():
     #sol_astar8 = astar(problema, heuristic=heuriticaManhattan)
     sol_bfs = bfs(problema)
     #sol_ucs = ucs(problema)
+
+
+# ************* PARTE 2 BEST COMPRACION A* VS FIRST SEARCH ***************
+#   Best First Search
+    print("\n\n**** Comparaciòn A* vs Best First **** ")
+
+#   h1: Fuera de Lugar
+    print("\n*********************************** h1: Fichas fuera de lugar *************************************\n")
+
+    sol_a1 = astar(problema, heuristic=heuristicaFueraLugar)
+    print("A* h1:", sol_a1)
+    print("Costo:", problema.getCostOfActions(sol_a1))
+
+    sol_b1 = bestfs(problema, heuristic=heuristicaFueraLugar)
+    print("Best First h1:", sol_b1)
+    print("Costo:", problema.getCostOfActions(sol_b1))
+
+#   h2: Manhattan 
+    print("\n\n\n*********************************** h2: Manhattan *************************************\n")
+
+    sol_a2 = astar(problema, heuristic=heuriticaManhattan)
+    print("A* h2:", sol_a2)
+    print("Costo:", problema.getCostOfActions(sol_a2))
+
+    sol_b2 = bestfs(problema, heuristic=heuriticaManhattan)
+    print("Best First h2:", sol_b2)
+    print("Costo:", problema.getCostOfActions(sol_b2))
+# ************* PARTE 2 BEST COMPRACION A* VS FIRST SEARCH ***************
+
+
     
     #sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
     #sol_astarHeuristica = astar(problema, heuristicaDesarrolladores)
@@ -89,10 +119,10 @@ def main():
     print(" Inicio =", problema.start, " Meta =", problema.goal)
     print("========================================\n")
     """
-    print("BFS (menos pasos):")
-    print(sol_bfs)
-    print("Costo:", problema.getCostOfActions(sol_bfs))
-    print()
+#     print("BFS (menos pasos):")
+#     print(sol_bfs)
+#     print("Costo:", problema.getCostOfActions(sol_bfs))
+#     print()
     """
     # Si quieres ver DFS también (ojo: puede dar rutas largas dependiendo del orden de sucesores)
     sol_dfs = dfs(problema)

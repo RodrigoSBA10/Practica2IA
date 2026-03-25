@@ -329,6 +329,48 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     return []
 
+def bestFirstSearch(problem, heuristic=nullHeuristic):
+    frontera = util.PriorityQueue()
+    visitados= set()
+    expandidos = 0
+
+
+    inicio = problem.getStartState()
+    if problem.isGoalState(inicio):
+        return []
+
+    h0 = heuristic(inicio, problem)
+    f0 = h0
+
+    print("\n=== Inicio de Best First Search ===")
+    print(f"Estado inicial: {inicio} | h(n): {h0} f(n): {f0}\n")
+
+    frontera.push((inicio, [], 0), f0)
+
+    while not frontera.isEmpty():
+        estado, camino, g = frontera.pop()
+
+        if estado in visitados:
+            continue
+        visitados.add(estado)
+
+        expandidos += 1
+
+        if problem.isGoalState(estado):
+            print(f"Nodos expandidos: {expandidos}")
+            h_final = heuristic(estado, problem)
+            print(f"Estado final: {estado} | costo real g(n): {g} h(n): {h_final} f(n): {h_final}\n")
+            return camino
+
+        for sucesor, accion, step_cost in problem.getSuccessors(estado):
+            if sucesor not in visitados:
+                nuevo_g = g + step_cost
+                h = heuristic(sucesor, problem)
+                f = h
+                frontera.push((sucesor, camino + [accion], nuevo_g), f )
+
+    return []
+
 def imprimir_solucion(problem, acciones):
     estado = problem.getStartState()
     print("\n=== Ejemplo ===")
@@ -493,5 +535,6 @@ dfs = depthFirstSearch
 bfs = breadthFirstSearch
 ucs = uniformCostSearch
 astar = aStarSearch
+bestfs = bestFirstSearch
 dls = depthLimitedSearch
 iddfs = iterativeDeepeningSearch
