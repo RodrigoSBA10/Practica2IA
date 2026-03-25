@@ -4,7 +4,7 @@
 
 # Ejecuta DFS/BFSUCS/A* sobre el problema de las jarras.
 
-from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs, heuristicaDesarrolladores, imprimir_solucion, heuriticaManhattan
+from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs, heuristicaDesarrolladores, imprimir_solucion, heuriticaManhattan, heuristicaFueraLugar
 from problems.jarras import JarrasProblem
 from problems.Desarroladores import DesarrolladoresBugsProblem
 from problems.OchoPuzzle import OchoPuzzle
@@ -72,10 +72,10 @@ def main():
     # Ejemplo clásico: jarra A de 5L, jarra B de 3L, meta (2,0)
     #problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
     #problema = DesarrolladoresBugsProblem()
-    problema = OchoPuzzle((1,2,3,4,5,6,7,0,8))
+    problema = OchoPuzzle((1,3,4,2,5,6,7,0,8))
     #sol_astar = astar(problema, heuristic=nullHeuristic)
-    sol_astar8 = astar(problema, heuristic=heuriticaManhattan)
-    #sol_bfs = bfs(problema)
+    #sol_astar8 = astar(problema, heuristic=heuriticaManhattan)
+    sol_bfs = bfs(problema)
     #sol_ucs = ucs(problema)
     
     #sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
@@ -88,12 +88,12 @@ def main():
     print(" Capacidad A =", problema.capA, " Capacidad B =", problema.capB)
     print(" Inicio =", problema.start, " Meta =", problema.goal)
     print("========================================\n")
-    
+    """
     print("BFS (menos pasos):")
     print(sol_bfs)
     print("Costo:", problema.getCostOfActions(sol_bfs))
     print()
-
+    """
     # Si quieres ver DFS también (ojo: puede dar rutas largas dependiendo del orden de sucesores)
     sol_dfs = dfs(problema)
     print("DFS (puede no ser óptimo):")
@@ -119,13 +119,13 @@ def main():
     #imprimir_solucion(problema, nullHeuristic)
     print("Costo:" , problema.getCostOfActions(sol_astar))
     print()
-    """
+    
     print("A* heuristica")
     print(sol_astar8)
     #imprimir_solucion(problema, nullHeuristic)
-    #print("Costo:" , problema.getCostOfActions(sol_astar8))
+    print("Costo:" , problema.getCostOfActions(sol_astar8))
     print()
-
+    """
     """
     print("A* heuristica")
     print(sol_astar)

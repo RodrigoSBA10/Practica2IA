@@ -36,14 +36,16 @@ class SearchProblem:
 # BFS — Búsqueda en Anchura
 # ===========================================================================
 
+def nullHeuristic(state, problem=None):
+    return 0
+
 def breadthFirstSearch(problem):
     """
     BFS grafo: usa Queue (FIFO). Marca visitado al encolar.
     Garantiza camino de menor número de pasos (costos uniformes).
     """
     frontera = util.Queue()
-    visitados = set() 
-
+    visitados = set()
     inicio = problem.getStartState()
     if problem.isGoalState(inicio):
         return []
@@ -61,7 +63,6 @@ def breadthFirstSearch(problem):
             if sucesor not in visitados:
                 visitados.add(sucesor)
                 frontera.push((sucesor, camino + [accion]))
-
     return []
 
 # ===========================================================================
@@ -255,6 +256,16 @@ def nullHeuristic(state, problem=None):
     return 0
 
 
+def heuristicaFueraLugar(state, problem=None):
+    fueraLugar = 0
+    for i , valor in enumerate(state):
+        if valor == 0 and i != 8:
+            fueraLugar += 1
+        else:
+            if (valor-1) != i:
+                fueraLugar += 1
+    return fueraLugar
+
 def heuriticaManhattan(state, problem=None):
     distancia = 0
     for i, valor in enumerate(state):
@@ -264,7 +275,7 @@ def heuriticaManhattan(state, problem=None):
         columna_actual = i % 3
         fila_meta = (valor -1) // 3
         columna_meta = (valor -1 ) % 3
-        distancia += abs(fila_actual - fila_meta + columna_actual - columna_meta)
+        distancia += abs(fila_actual - fila_meta) + abs(columna_actual - columna_meta)
     return distancia
 
 
@@ -314,11 +325,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 best_g[sucesor] = nuevo_g
                 h = heuristic(sucesor, problem)
                 f = nuevo_g + h
-                print(f"""Nodo expandido: {sucesor}
-                    g(n): {nuevo_g}
-                    h(n): {h}
-                    f(n): {f}
-                """)
                 frontera.push((sucesor, camino + [accion], nuevo_g), f)
 
     return []
