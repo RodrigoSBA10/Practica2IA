@@ -4,7 +4,7 @@
 # Tema: Desarrolladores y Bugs Críticos
 
 class DesarrolladoresBugsProblem:
-
+    # Constructur
     def __init__(self):
 
         # Estado: (dev_izq, bugs_izq, vehiculo)
@@ -18,6 +18,7 @@ class DesarrolladoresBugsProblem:
         self.total_bugs = 3 #Numero de bugs 
 
         # capacidad máxima del vehículo
+        # Diccionario de costos (con clave (tuplas) y valor)
         self.capacidad = 2
         #Se crea una tupla para representar los movimientos y el costo por operacion 
         self.costos = {
@@ -47,27 +48,35 @@ class DesarrolladoresBugsProblem:
     # --------------------------------
 
     def es_estado_valido(self, state):
-
-        dev_izq, bugs_izq, _ = state
-        
+        # Extrae el valor actual del estado
+        dev_izq, bugs_izq, _ = state     
         #Calcula los desarrolladores del lado derecho
         dev_der = self.total_dev - dev_izq
         bugs_der = self.total_bugs - bugs_izq
        
         #Primer validacion vcerifica que no existan desarrolladores o bugs negativos
         # en ambos lados
+
+
+        # se calcula cuantos hay en el derecho
+        dev_der = self.total_dev - dev_izq
+        bugs_der = self.total_bugs - bugs_izq
+        # no puede haber valores negativos
         if dev_izq < 0 or bugs_izq < 0:
             return False
 
         if dev_der < 0 or bugs_der < 0:
             return False
-        
         # Segunda validación:
         # Verifica que no haya más desarrolladores o bugs que el total del sistema
         if dev_izq > self.total_dev or bugs_izq > self.total_bugs:
             return False
         # Tercera validación:
         # En el lado izquierdo, los bugs no pueden superar a los desarrolladores 
+        # No puedo haber mas de lo establecido
+        if dev_izq > self.total_dev or bugs_izq > self.total_bugs:
+            return False
+        # No puede haber mas bugs que desarrolladores
         if dev_izq > 0 and bugs_izq > dev_izq:
             return False
         # Cuarta validación:
@@ -79,21 +88,23 @@ class DesarrolladoresBugsProblem:
         return True
 
     # --------------------------------
-    # Generación de sucesores
+    # Generación de sucesores, los posibles estados
     # --------------------------------
 
     def getSuccessors(self, state):
-
+        # Estado actual
         dev_izq, bugs_izq, vehiculo = state
-        #Se crea una lista para almacenar los estados sucesores 
-        sucesores = []
 
+        #Se crea una lista para almacenar los estados sucesores 
+        # Lista para guardar los estados siguientes
+        sucesores = []
+        # Los movimientos posibles y permitidos
         movimientos = [
-            (1, 0),  # 1 desarrollador
+            (0, 2),  # 2 Bugs
+            (0, 1),  # 1 Bug
+            (1, 1),  # i desarrollador 1 bug
             (2, 0),  # 2 desarrolladores
-            (0, 1),  # 1 bug
-            (0, 2),  # 2 bugs
-            (1, 1)   # 1 desarrollador y 1 bug
+            (1, 0)   # 1 desarrollador
         ]
         #Itera sobre los movimientos posibles definidos 
         for d, b in movimientos:
@@ -108,6 +119,17 @@ class DesarrolladoresBugsProblem:
                 if dev_izq < d or bugs_izq < b:
                     continue
                 #Genra un nuevo estado
+        # recorrer los movimientos
+        for d, b in movimientos:
+            # No debe exceder la capacidad
+            if d + b > self.capacidad:
+                continue
+            # si el vehiculo esta del lado izquierdo
+            if vehiculo == 0:
+                # para validar que esten los elementos que se desean mover
+                if dev_izq < d or bugs_izq < b:
+                    continue
+                # Se restan los que se meuven y se cambia el vehiculo
                 nuevo_estado = (
                     dev_izq - d,
                     bugs_izq - b,
@@ -118,13 +140,14 @@ class DesarrolladoresBugsProblem:
 
             else:
                 #Calula el laado derecho 
+                # calcular los de la derecha
                 dev_der = self.total_dev - dev_izq
                 bugs_der = self.total_bugs - bugs_izq
                 
                 #Valida la dispopnibilidad de la derecha
                 if dev_der < d or bugs_der < b:
                     continue
-
+                # se regresan al lado izq
                 nuevo_estado = (
                     dev_izq + d,
                     bugs_izq + b,
@@ -132,21 +155,25 @@ class DesarrolladoresBugsProblem:
                 )
 
                 accion = f"Regresar {d} Dev y {b} Bugs"
-
             #Si se cumple las reglas, guarda el estado valido  
+            # solo acepta si el estado es valido
             if self.es_estado_valido(nuevo_estado):
 
                 # cálculo del costo
                 costo = (2 * d) + (1 * b)
+
                 #Almacena el estado, la accion realizada y el costo 
+                #costo = self.getCostOfActions(accion)
+                # se guarda el sucesor por que es valido
+                #print("Costo: ", costo)
                 sucesores.append(
                     (nuevo_estado, accion, costo)
                 )
-
+        # devuelve los sucesores validos
         return sucesores
 
     # --------------------------------
-    # Costo de acciones
+    # Costo de acciones de la secuendia de acciones
     # --------------------------------
 
     def getCostOfActions(self, actions):

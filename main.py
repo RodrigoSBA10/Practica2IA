@@ -8,6 +8,11 @@ from search import dfs, bfs, ucs, astar,dfs_sin, nullHeuristic
 from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs
 from problems.Desarroladores import DesarrolladoresBugsProblem
 from problems.jarras import JarrasProblem
+from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs, heuristicaDesarrolladores, imprimir_solucion, heuriticaManhattan, heuristicaFueraLugar
+from problems.jarras import JarrasProblem
+from problems.Desarroladores import DesarrolladoresBugsProblem
+from problems.OchoPuzzle import OchoPuzzle
+
 
 # Definición de un problema de grafo simple para probar los algoritmos de búsqueda.
 class ProblemaGrafo:
@@ -69,6 +74,7 @@ class ProblemaGrafo:
 # Probamos con el problema de las jarras.
 def main():
     # Ejemplo clásico: jarra A de 5L, jarra B de 3L, meta (2,0)
+
     problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
     #problema = DesarrolladoresBugsProblem()
     sol_bfs,gen1, exp1 = bfs(problema)
@@ -78,6 +84,21 @@ def main():
     sol_dls = dls(problema, 2)
 
     
+
+    #problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
+    #problema = DesarrolladoresBugsProblem()
+    problema = OchoPuzzle((1,3,4,2,5,6,7,0,8))
+    #sol_astar = astar(problema, heuristic=nullHeuristic)
+    #sol_astar8 = astar(problema, heuristic=heuriticaManhattan)
+    sol_bfs = bfs(problema)
+    #sol_ucs = ucs(problema)
+    
+    #sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
+    #sol_astarHeuristica = astar(problema, heuristicaDesarrolladores)
+    #sol_iddfs = iddfs(problema, 15)
+    #sol_dls = dls(problema, 2)
+    """
+
     print("========================================")
     print(" Problema de las Jarras")
     print(" Capacidad A =", problema.capA, " Capacidad B =", problema.capB)
@@ -103,6 +124,7 @@ def main():
     print(astar)
     print("Costo:", problema.getCostOfActions(sol_astar))
 
+    """
 
     # Si quieres ver DFS también (ojo: puede dar rutas largas dependiendo del orden de sucesores)
     sol_dfs, gen, exp = dfs(problema)
@@ -112,6 +134,41 @@ def main():
     print("Nodos generados:", gen)
     print("Nodos expandidos:", exp)
 
+    print("A*")
+    print(sol_astar)
+    print("Costo:" , problema.getCostOfActions(sol_astar))
+    print()
+    """
+
+
+    #print("A* heuristica")
+    #print(sol_astarHeuristica)
+    #imprimir_solucion(problema, sol_astarHeuristica)
+    #print("Costo:" , problema.getCostOfActions(sol_astarHeuristica))
+    #print()
+    """
+    print("A* heuristica")
+    print(sol_astar)
+    #imprimir_solucion(problema, nullHeuristic)
+    print("Costo:" , problema.getCostOfActions(sol_astar))
+    print()
+    
+    print("A* heuristica")
+    print(sol_astar8)
+    #imprimir_solucion(problema, nullHeuristic)
+    print("Costo:" , problema.getCostOfActions(sol_astar8))
+    print()
+    """
+    """
+    print("A* heuristica")
+    print(sol_astar)
+    #imprimir_solucion(problema, sol_astar)
+
+    print("UCS (menor costo):")
+    print(sol_ucs)
+    print("Costo:", problema.getCostOfActions(sol_ucs))
+    print()
+
     print("A* (puede no ser óptimo):")
     print(sol_astar)
     print("Costo:", problema.getCostOfActions(sol_astar))
@@ -120,6 +177,7 @@ def main():
     print("IDDFS")
     print(sol_iddfs)
     print("Costo:", problema.getCostOfActions(sol_iddfs))
+
     print("Nodos generados:", gen3)
     print("Nodos expandidos:", exp3)
     print()
@@ -132,12 +190,5 @@ def main():
     print(dfs_sin_vis)
     print("Costo:", problema.getCostOfActions(dfs_sin_vis)) 
     """
-    
-
-
 if __name__ == "__main__":
     main()
-
-
-
-
