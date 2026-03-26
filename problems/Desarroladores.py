@@ -11,16 +11,16 @@ class DesarrolladoresBugsProblem:
         # vehiculo = 0 -> servidor de pruebas (izquierda)
         # vehiculo = 1 -> servidor seguro (derecha)
 
-        self.start = (3, 3, 0)
-        self.goal = (0, 0, 1)
+        self.start = (3, 3, 0)  #Estado inicial 
+        self.goal = (0, 0, 1) #Estado Final
 
-        self.total_dev = 3
-        self.total_bugs = 3
+        self.total_dev = 3 #numero de desarrolladores 
+        self.total_bugs = 3 #numero de bugs
 
         # capacidad máxima del vehículo
         self.capacidad = 2
         self.costos = {
-            (1, 0): 2,  # 1 Dev
+            (1, 0): 2,  # 1 Dev estos son las tuplas ()
             (2, 0): 4,  # 2 Dev
             (0, 1): 1,  # 1 Bug
             (0, 2): 2,  # 2 Bugs
