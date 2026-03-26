@@ -342,9 +342,10 @@ def bestFirstSearch(problem, heuristic=nullHeuristic):
     frontera = util.PriorityQueue()
     visitados= set()
     expandidos = 0
-
+    generados = 0
 
     inicio = problem.getStartState()
+    inicio_tiempo = time.time()
     if problem.isGoalState(inicio):
         return []
 
@@ -354,10 +355,10 @@ def bestFirstSearch(problem, heuristic=nullHeuristic):
     print("\n=== Inicio de Best First Search ===")
     print(f"Estado inicial: {inicio} | h(n): {h0} f(n): {f0}\n")
 
-    frontera.push((inicio, [], 0), f0)
+    frontera.push((inicio, []), f0)
 
     while not frontera.isEmpty():
-        estado, camino, g = frontera.pop()
+        estado, camino = frontera.pop()
 
         if estado in visitados:
             continue
@@ -366,19 +367,27 @@ def bestFirstSearch(problem, heuristic=nullHeuristic):
         expandidos += 1
 
         if problem.isGoalState(estado):
-            print(f"Nodos expandidos: {expandidos}")
-            h_final = heuristic(estado, problem)
-            print(f"Estado final: {estado} | costo real g(n): {g} h(n): {h_final} f(n): {h_final}\n")
-            return camino
+            #print(f"Nodos expandidos: {expandidos}")
+            #h_final = heuristic(estado, problem)
+            #print(f"Estado final: {estado} | costo real g(n): {g} h(n): {h_final} f(n): {h_final}\n")
+            tiempo_total = time.time() - inicio_tiempo
+            return {
+                "Camino": camino,
+                "Costo": len(camino),
+                "Expandidos": expandidos,
+                "Generados": generados,
+                "Tiempo": tiempo_total,
+            }
 
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
+            generados += 1
             if sucesor not in visitados:
-                nuevo_g = g + step_cost
+                #nuevo_g = g + step_cost
                 h = heuristic(sucesor, problem)
                 f = h
-                frontera.push((sucesor, camino + [accion], nuevo_g), f )
+                frontera.push((sucesor, camino + [accion]), f )
 
-    return []
+    return None
 
 def imprimir_solucion(problem, acciones):
     estado = problem.getStartState()
@@ -394,7 +403,6 @@ def imprimir_solucion(problem, acciones):
                 break
 
     print(f"\nMeta alcanzada: {estado}")
-
 
 # ===========================================================================
 # DLS — Depth-Limited Search (búsqueda en profundidad con límite)
