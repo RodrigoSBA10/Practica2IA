@@ -323,16 +323,16 @@ def heuristicaDesarrolladores(state, problem=None):
     dev_izq, bugs_izq, _ = state
     return (2 * dev_izq) + bugs_izq
 
-
+#A estrella es una cola de prioridad 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    frontera = util.PriorityQueue()
-    best_g = {}
-    expandidos = 0
+    frontera = util.PriorityQueue() #Una cola de prioridad
+    best_g = {} # Guarda el mejor costo conocido por el estado
+    expandidos = 0 #Cuenta cuantos nodos se han explorado
 
     inicio = problem.getStartState()
     if problem.isGoalState(inicio):
         return []
-
+   #Inicializa los costos 
     g0 = 0
     h0 = heuristic(inicio, problem)
     f0 = g0 + h0
