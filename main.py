@@ -1,10 +1,6 @@
-# main.py
-# ------
-# Prueba simple de DFS/BFS/UCS/A* con un grafo pequeño.
-
 # Ejecuta DFS/BFSUCS/A* sobre el problema de las jarras.
 
-from search import dfs, bfs, ucs, astar, nullHeuristic, dls, iddfs, heuristicaDesarrolladores, imprimir_solucion, heuriticaManhattan, heuristicaFueraLugar
+from search import dfs, bfs, ucs, astar, bestfs, nullHeuristic, dls, iddfs, heuristicaDesarrolladores, imprimir_solucion, heuriticaManhattan, heuristicaFueraLugar
 from problems.jarras import JarrasProblem
 from problems.Desarroladores import DesarrolladoresBugsProblem
 from problems.OchoPuzzle import OchoPuzzle
@@ -73,81 +69,30 @@ def main():
     #problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
     #problema = DesarrolladoresBugsProblem()
     problema = OchoPuzzle((1,3,4,2,5,6,7,0,8))
-    sol_astar = astar(problema, heuristic=nullHeuristic)
+    #astarM = astar(problema, heuristic=heuriticaManhattan)
+    #bestM = bestfs(problema, heuristic=heuriticaManhattan)
+    #astarF = astar(problema, heuristic=heuristicaFueraLugar)
+    #bestF = bestfs(problema, heuristic=heuristicaFueraLugar)
+    #sol_astar = astar(problema, heuristic=nullHeuristic)
     #sol_astar8 = astar(problema, heuristic=heuriticaManhattan)
-    sol_bfs = bfs(problema)
+    #sol_bfs = bfs(problema)
     #sol_ucs = ucs(problema)
-    
-    #sol_astar = astar(problema, heuristic=nullHeuristic)  # con h=0, A* = UCS
-    #sol_astarHeuristica = astar(problema, heuristicaDesarrolladores)
-    #sol_iddfs = iddfs(problema, 15)
-    #sol_dls = dls(problema, 2)
-    """
-    print("========================================")
-    print(" Problema de las Jarras")
-    print(" Capacidad A =", problema.capA, " Capacidad B =", problema.capB)
-    print(" Inicio =", problema.start, " Meta =", problema.goal)
-    print("========================================\n")
-    """
-    print("BFS (menos pasos):")
-    print(sol_bfs)
-    print("Costo:", problema.getCostOfActions(sol_bfs))
-    print()
-    """
-    # Si quieres ver DFS también (ojo: puede dar rutas largas dependiendo del orden de sucesores)
-    sol_dfs = dfs(problema)
-    print("DFS (puede no ser óptimo):")
-    print(sol_dfs)
-    print("Costo:", problema.getCostOfActions(sol_dfs))
-    print()
-
-    print("A*")
-    print(sol_astar)
-    print("Costo:" , problema.getCostOfActions(sol_astar))
-    print()
-    """
-    print("A*")
-    print(sol_astar)
-    print("Costo:" , problema.getCostOfActions(sol_astar))
-    print()
 
 
-    #print("A* heuristica")
-    #print(sol_astarHeuristica)
-    #imprimir_solucion(problema, sol_astarHeuristica)
-    #print("Costo:" , problema.getCostOfActions(sol_astarHeuristica))
-    #print()
-    """
-    print("A* heuristica")
-    print(sol_astar)
-    #imprimir_solucion(problema, nullHeuristic)
-    print("Costo:" , problema.getCostOfActions(sol_astar))
-    print()
-    
-    print("A* heuristica")
-    print(sol_astar8)
-    #imprimir_solucion(problema, nullHeuristic)
-    print("Costo:" , problema.getCostOfActions(sol_astar8))
-    print()
-    """
-    """
-    print("A* heuristica")
-    print(sol_astar)
-    #imprimir_solucion(problema, sol_astar)
+    print("\n**** Comparación A* vs Best First ****")
 
-    print("UCS (menor costo):")
-    print(sol_ucs)
-    print("Costo:", problema.getCostOfActions(sol_ucs))
-    print()
+    # h1
+    print("\n--- h1: Fuera de lugar ---")
+    astarF = astar(problema, heuristic=heuristicaFueraLugar)
+    print("A*:", astarF)
+    bestF = bestfs(problema, heuristic=heuristicaFueraLugar)
+    print("Best First:", bestF)
 
-    print("A* (puede no ser óptimo):")
-    print(sol_astar)
-    print("Costo:", problema.getCostOfActions(sol_astar))
-    print()
-
-    print("IDDFS")
-    print(sol_iddfs)
-    print("Costo:", problema.getCostOfActions(sol_iddfs))
-    """
+    # h2
+    print("\n--- h2: Manhattan ---")
+    astarM = astar(problema, heuristic=heuriticaManhattan)
+    print("A*:", astarM)
+    bestM = bestfs(problema, heuristic=heuriticaManhattan)
+    print("Best First:", bestM)
 if __name__ == "__main__":
     main()
