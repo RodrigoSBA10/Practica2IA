@@ -67,8 +67,8 @@ class ProblemaGrafo:
 def main():
     # Ejemplo clásico: jarra A de 5L, jarra B de 3L, meta (2,0)
     #problema = JarrasProblem(capA=5, capB=3, start=(0, 0), goal=(2, 0))
-    #problema = DesarrolladoresBugsProblem()
-    problema = OchoPuzzle((1,3,4,2,5,6,7,0,8))
+    problema = DesarrolladoresBugsProblem()
+    #problema = OchoPuzzle((1,3,4,2,5,6,7,0,8))
     #astarM = astar(problema, heuristic=heuriticaManhattan)
     #bestM = bestfs(problema, heuristic=heuriticaManhattan)
     #astarF = astar(problema, heuristic=heuristicaFueraLugar)
@@ -79,20 +79,25 @@ def main():
     #sol_ucs = ucs(problema)
 
 
-    print("\n**** Comparación A* vs Best First ****")
+    print("\n**** Comparación A* vs Best First vs UCS ****")
 
     # h1
-    print("\n--- h1: Fuera de lugar ---")
-    astarF = astar(problema, heuristic=heuristicaFueraLugar)
+    print("\n--- Heuristica Desarrolladores ---")
+    astarF = astar(problema, heuristic=heuristicaDesarrolladores)
     print("A*:", astarF)
-    bestF = bestfs(problema, heuristic=heuristicaFueraLugar)
+    bestF = bestfs(problema, heuristic=heuristicaDesarrolladores)
     print("Best First:", bestF)
+    print("UCS")
+    sol_ucs = ucs(problema)
+    print("UCS:", sol_ucs)
 
     # h2
+    """
     print("\n--- h2: Manhattan ---")
     astarM = astar(problema, heuristic=heuriticaManhattan)
     print("A*:", astarM)
     bestM = bestfs(problema, heuristic=heuriticaManhattan)
     print("Best First:", bestM)
+    """
 if __name__ == "__main__":
     main()

@@ -174,38 +174,6 @@ def breadthFirstSearchTree(problem, max_iter=10000):
 # UCS — Búsqueda de Costo Uniforme
 # ===========================================================================
 
-def uniformCostSearch(problem):
-    """
-    UCS: usa PriorityQueue por costo acumulado g(n).
-    Óptimo si costos no negativos.
-    """
-    frontera = util.PriorityQueue()
-    best_g = {}
-
-    inicio = problem.getStartState()
-    if problem.isGoalState(inicio):
-        return []
-
-    frontera.push((inicio, [], 0), 0)
-    best_g[inicio] = 0
-
-    while not frontera.isEmpty():
-        estado, camino, g = frontera.pop()
-
-        if g > best_g.get(estado, float("inf")):
-            continue
-
-        if problem.isGoalState(estado):
-            return camino
-
-        for sucesor, accion, step_cost in problem.getSuccessors(estado):
-            nuevo_g = g + step_cost
-            if nuevo_g < best_g.get(sucesor, float("inf")):
-                best_g[sucesor] = nuevo_g
-                frontera.push((sucesor, camino + [accion], nuevo_g), nuevo_g)
-
-    return []
-
 
 def uniformCostSearchStats(problem):
     """
@@ -282,7 +250,7 @@ def heuriticaManhattan(state, problem=None):
 
 def heuristicaDesarrolladores(state, problem=None):
     dev_izq, bugs_izq, _ = state
-    return (2 * dev_izq) + bugs_izq
+    return  dev_izq + bugs_izq + 2
 
 
 def aStarSearch(problem, heuristic=nullHeuristic):
@@ -335,6 +303,51 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 h = heuristic(sucesor, problem)
                 f = nuevo_g + h
                 frontera.push((sucesor, camino + [accion], nuevo_g), f)
+
+    return None
+
+def uniformCostSearch(problem):
+    """
+    UCS: usa PriorityQueue por costo acumulado g(n).
+    Óptimo si costos no negativos.
+    """
+    frontera = util.PriorityQueue()
+    best_g = {}
+    expandidos = 0
+    generados = 0
+    inicio = problem.getStartState()
+    inicio_tiempo = time.time()
+    if problem.isGoalState(inicio):
+        return []
+
+    frontera.push((inicio, [], 0), 0)
+    best_g[inicio] = 0
+    print("\n=== INICIO UCS ===")
+    print(f"Estado inicial: {inicio} | g(n): 0\n")
+    while not frontera.isEmpty():
+        estado, camino, g = frontera.pop()
+
+        if g > best_g.get(estado, float("inf")):
+            continue
+        expandidos += 1
+        if problem.isGoalState(estado):
+            print(f"Nodos expandidos: {expandidos}")
+            print(f"Estado final: {estado} | g(n): {g}\n")
+            tiempo_total = time.time() - inicio_tiempo
+            return {
+                "Camino": camino,
+                "Costo": g,
+                "Expandidos": expandidos,
+                "Generados": generados,
+                "Tiempo": tiempo_total,
+            }
+
+        for sucesor, accion, step_cost in problem.getSuccessors(estado):
+            nuevo_g = g + step_cost
+            generados += 1
+            if nuevo_g < best_g.get(sucesor, float("inf")):
+                best_g[sucesor] = nuevo_g
+                frontera.push((sucesor, camino + [accion], nuevo_g), nuevo_g)
 
     return None
 
