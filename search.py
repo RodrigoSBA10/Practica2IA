@@ -5,6 +5,7 @@
 # Incluye variantes: grafo (con visitados), árbol (sin visitados),
 # e instrumentadas (con contadores nodos_generados / nodos_expandidos).
 import math
+import time
 
 import util
 
@@ -259,9 +260,7 @@ def nullHeuristic(state, problem=None):
 def heuristicaFueraLugar(state, problem=None):
     fueraLugar = 0
     for i , valor in enumerate(state):
-        if valor == 0 and i != 8:
-            fueraLugar += 1
-        else:
+        if valor != 0:
             if (valor-1) != i:
                 fueraLugar += 1
     return fueraLugar
@@ -290,8 +289,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     frontera = util.PriorityQueue()
     best_g = {}
     expandidos = 0
-
+    generados = 0
     inicio = problem.getStartState()
+    inicio_tiempo = time.time()
     if problem.isGoalState(inicio):
         return []
 
@@ -316,9 +316,18 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if problem.isGoalState(estado):
             print(f"Nodos expandidos: {expandidos}")
             print(f"Estado final: {estado} | g(n): {g0} h(n): {h0} f(n): {f0}\n")
-            return camino
+            tiempo_total = time.time() - inicio_tiempo
+            return {
+                "Camino": camino,
+                "Costo": g,
+                "Expandidos": expandidos,
+                "Generados": generados,
+                "Tiempo": tiempo_total,
+            }
+            #return camino
 
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
+            generados += 1
             nuevo_g = g + step_cost
 
             if nuevo_g < best_g.get(sucesor, float("inf")):
@@ -327,7 +336,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 f = nuevo_g + h
                 frontera.push((sucesor, camino + [accion], nuevo_g), f)
 
-    return []
+    return None
 
 def bestFirstSearch(problem, heuristic=nullHeuristic):
     frontera = util.PriorityQueue()
