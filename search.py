@@ -252,17 +252,18 @@ def uniformCostSearchStats(problem):
 # ===========================================================================
 # A* — Búsqueda A Estrella
 # ===========================================================================
-
+#Heuristica null
 def nullHeuristic(state, problem=None):
     return 0
 
-
+#Heuristica para el problema 8Puzle
 def heuristicaFueraLugar(state, problem=None):
     fueraLugar = 0
+    #Con enumerate da la iteracion del for con el valor de la pos y el valor que esta en esa pos
     for i , valor in enumerate(state):
         if valor != 0:
-            if (valor-1) != i:
-                fueraLugar += 1
+            if (valor-1) != i: # si esta mal
+                fueraLugar += 1 #Se suma uno
     return fueraLugar
 
 def heuriticaManhattan(state, problem=None):
@@ -286,33 +287,38 @@ def heuristicaDesarrolladores(state, problem=None):
 
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    frontera = util.PriorityQueue()
-    best_g = {}
+    frontera = util.PriorityQueue() #Cola de prioridad
+    best_g = {} #Guardara el mejor costo
     expandidos = 0
     generados = 0
+    #Estado inicial
     inicio = problem.getStartState()
     inicio_tiempo = time.time()
+    #Verifica si ya es solucion 
     if problem.isGoalState(inicio):
         return []
-
+    #Costos iniciales 
     g0 = 0
     h0 = heuristic(inicio, problem)
     f0 = g0 + h0
 
     print("\n=== INICIO A* ===")
     print(f"Estado inicial: {inicio} | g(n): {g0} h(n): {h0} f(n): {f0}\n")
-
+    
+    # Insertar en la frontera: (estado, camino, costo)
     frontera.push((inicio, [], g0), f0)
+    #Guarda mejor costo del inicio
     best_g[inicio] = g0
 
     while not frontera.isEmpty():
+        # Sacar el estado con menor f(n)
         estado, camino, g = frontera.pop()
 
         if g > best_g.get(estado, float("inf")):
             continue
 
         expandidos += 1
-
+        #verificamos si es solucion 
         if problem.isGoalState(estado):
             print(f"Nodos expandidos: {expandidos}")
             print(f"Estado final: {estado} | g(n): {g0} h(n): {h0} f(n): {f0}\n")
@@ -325,30 +331,30 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 "Tiempo": tiempo_total,
             }
             #return camino
-
+        #Expandir los nodos sucesores
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
             generados += 1
             nuevo_g = g + step_cost
-
+            #Verifica si es un mejor camino
             if nuevo_g < best_g.get(sucesor, float("inf")):
                 best_g[sucesor] = nuevo_g
-                h = heuristic(sucesor, problem)
-                f = nuevo_g + h
+                h = heuristic(sucesor, problem) #Calcula la heuristica 
+                f = nuevo_g + h #Realiza la operacion para obtener el mejor conston sumando el real con el predicho
                 frontera.push((sucesor, camino + [accion], nuevo_g), f)
 
     return None
 
 def bestFirstSearch(problem, heuristic=nullHeuristic):
     frontera = util.PriorityQueue()
-    visitados= set()
+    visitados= set() #Almacena los estados visitados
     expandidos = 0
     generados = 0
-
+    #Estado inicila
     inicio = problem.getStartState()
     inicio_tiempo = time.time()
     if problem.isGoalState(inicio):
         return []
-
+    # A diferencia de A* solo utilizamos la heuristica
     h0 = heuristic(inicio, problem)
     f0 = h0
 
@@ -359,13 +365,13 @@ def bestFirstSearch(problem, heuristic=nullHeuristic):
 
     while not frontera.isEmpty():
         estado, camino = frontera.pop()
-
+        #Evitamos usar estados visitados 
         if estado in visitados:
             continue
         visitados.add(estado)
 
         expandidos += 1
-
+        #verificasmos si es solucion
         if problem.isGoalState(estado):
             #print(f"Nodos expandidos: {expandidos}")
             #h_final = heuristic(estado, problem)
@@ -383,8 +389,8 @@ def bestFirstSearch(problem, heuristic=nullHeuristic):
             generados += 1
             if sucesor not in visitados:
                 #nuevo_g = g + step_cost
-                h = heuristic(sucesor, problem)
-                f = h
+                h = heuristic(sucesor, problem) #Calcula la heuristica
+                f = h # Solo iteractua la heuristica a diferencia de A*
                 frontera.push((sucesor, camino + [accion]), f )
 
     return None

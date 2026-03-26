@@ -17,9 +17,9 @@ class OchoPuzzle:
         sucesores = []
         # Lista mas facil de manipular
         lista = list(state)
-        vacio = lista.index(0)
-        fila = vacio // 3
-        col = vacio % 3
+        vacio = lista.index(0) #Almacena la pos del valor 0
+        fila = vacio // 3 #La divicion con la parte entera 
+        col = vacio % 3 
         movimientos = []
         if fila > 0:
             movimientos.append((-1, 0, "Mov. Arriba"))
@@ -36,8 +36,8 @@ class OchoPuzzle:
             nueva_lista = lista.copy()
             nueva_lista[vacio], nueva_lista[nuevo_vacio] = nueva_lista[nuevo_vacio], nueva_lista[vacio]
             costo = 1
-            nuevo_estado = tuple(nueva_lista)
-            sucesores.append((nuevo_estado, accion, costo))
+            nuevo_estado = tuple(nueva_lista) #Convierte la lista en una tupla
+            sucesores.append((nuevo_estado, accion, costo)) #Almacena una tupla, ademas la accion que realizo, y el costo que es 1 
         return sucesores
 
     def getCostOfActions(self, actions):
