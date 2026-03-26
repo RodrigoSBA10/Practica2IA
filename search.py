@@ -33,62 +33,9 @@ class SearchProblem:
         raise NotImplementedError
 
 
-#DFS con nodos 
-def depthFirstSearch(problem):
-    """
-    DFS: usa Stack (LIFO). No garantiza optimalidad.
-    Graph Search: usa visitados para evitar ciclos.
-    """
-    frontera = util.Stack()
-    visitados = set()
-    nodos_generados = 0
-    nodos_expandidos = 0
-
-    inicio = problem.getStartState()
-    frontera.push((inicio, []))  # (estado, camino)
-    
-
-
-    while not frontera.isEmpty():
-        estado, camino = frontera.pop()
-        #Aumentar los nodos expandidos al realizar pop
-        nodos_expandidos += 1
-
-        if problem.isGoalState(estado):
-            return camino, nodos_generados, nodos_expandidos
-
-        if estado in visitados:
-            continue
-        visitados.add(estado)
-
-        for sucesor, accion, costo in problem.getSuccessors(estado):
-            if sucesor not in visitados:
-                frontera.push((sucesor, camino + [accion]))
-                nodos_generados += 1
-
-
-    return [], nodos_generados, nodos_expandidos
-"""
-    implementacion con DFS usando, un arbol sin visitados  
-"""
-def sin_visitados_dfs(problem):
-    frontera = util.Stack()
-    inicio = problem.getStartState()
-    frontera.push((inicio, []))
-    nodos_generados = 0
-    nodos_expandidos = 0
-
-    while not frontera.isEmpty():
-        estado, camino = frontera.pop()
-        nodos_expandidos += 1
-        if problem.isGoalState(estado):
-            return camino, nodos_generados, nodos_expandidos
-        for sucesor, accion, costo in problem.getSuccessors(estado):
-            frontera.push((sucesor, camino + [accion]))
-            nodos_generados += 1
-   
-    return [], nodos_generados, nodos_expandidos
-
+# ===========================================================================
+# BFS — Búsqueda en Anchura
+# ===========================================================================
 
 def nullHeuristic(state, problem=None):
     return 0
@@ -100,12 +47,6 @@ def breadthFirstSearch(problem):
     """
     frontera = util.Queue()
     visitados = set()
-
-    nodos_generados = 0
-    nodos_expandidos = 0 
-
-
-
     inicio = problem.getStartState()
     if problem.isGoalState(inicio):
         return []
@@ -115,24 +56,47 @@ def breadthFirstSearch(problem):
 
     while not frontera.isEmpty():
         estado, camino = frontera.pop()
-        nodos_expandidos += 1
 
         if problem.isGoalState(estado):
-            return camino, nodos_generados, nodos_expandidos
+            return camino
 
         for sucesor, accion, costo in problem.getSuccessors(estado):
             if sucesor not in visitados:
                 visitados.add(sucesor)
                 frontera.push((sucesor, camino + [accion]))
-
-                nodos_generados += 1
-
-    return [],nodos_generados, nodos_expandidos
-
     return []
+
 # ===========================================================================
 # DFS — Búsqueda en Profundidad
 # ===========================================================================
+
+def depthFirstSearch(problem):
+    """
+    DFS grafo: usa Stack (LIFO). Usa visitados para evitar ciclos.
+    No garantiza optimalidad.
+    """
+    frontera = util.Stack()
+    visitados = set()
+
+    inicio = problem.getStartState()
+    frontera.push((inicio, []))
+
+    while not frontera.isEmpty():
+        estado, camino = frontera.pop()
+
+        if problem.isGoalState(estado):
+            return camino
+
+        if estado in visitados:
+            continue
+        visitados.add(estado)
+
+        for sucesor, accion, costo in problem.getSuccessors(estado):
+            if sucesor not in visitados:
+                frontera.push((sucesor, camino + [accion]))
+
+    return []
+
 
 # BFS grafo con contadores
 # Retornamos(acciones, nodos_generados, nodos_expandidos, termino).
@@ -272,11 +236,9 @@ def uniformCostSearchStats(problem):
         nodos_expandidos += 1
 
         if problem.isGoalState(estado):
-
-            return camino, nodos_generados, nodos_expandidos
-
             print("UCS nodos expandidos: ", nodos_expandidos, " Nodos generados: ", nodos_generados)
             return camino, nodos_generados, nodos_expandidos, True
+
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
             nuevo_g = g + step_cost
             if nuevo_g < best_g.get(sucesor, float("inf")):
@@ -284,7 +246,7 @@ def uniformCostSearchStats(problem):
                 frontera.push((sucesor, camino + [accion], nuevo_g), nuevo_g)
                 nodos_generados += 1
 
-    return [], nodos_generados, nodos_expandidos
+    return [], nodos_generados, nodos_expandidos, False
 
 
 # ===========================================================================
@@ -322,24 +284,17 @@ def heuristicaDesarrolladores(state, problem=None):
     dev_izq, bugs_izq, _ = state
     return (2 * dev_izq) + bugs_izq
 
-#A estrella es una cola de prioridad 
-def aStarSearch(problem, heuristic=nullHeuristic):
-<<<<<<< HEAD
-    frontera = util.PriorityQueue() #Una cola de prioridad
-    best_g = {} # Guarda el mejor costo conocido por el estado
-    expandidos = 0 #Cuenta cuantos nodos se han explorado
 
-=======
+def aStarSearch(problem, heuristic=nullHeuristic):
     frontera = util.PriorityQueue()
     best_g = {}
     expandidos = 0
     generados = 0
->>>>>>> desarrollo
     inicio = problem.getStartState()
     inicio_tiempo = time.time()
     if problem.isGoalState(inicio):
         return []
-   #Inicializa los costos 
+
     g0 = 0
     h0 = heuristic(inicio, problem)
     f0 = g0 + h0
@@ -594,12 +549,9 @@ def iterativeDeepeningSearchNoCycleCheck(problem, max_depth=50):
 # Alias para compatibilidad
 # ===========================================================================
 dfs = depthFirstSearch
-dfs_sin = sin_visitados_dfs
 bfs = breadthFirstSearch
-#ucs = uniformCostSearch
-ucs = uniformCostSearchStats
+ucs = uniformCostSearch
 astar = aStarSearch
 bestfs = bestFirstSearch
 dls = depthLimitedSearch
-#iddfs = iterativeDeepeningSearch
-iddfs = iterativeDeepeningSearchStats
+iddfs = iterativeDeepeningSearch
