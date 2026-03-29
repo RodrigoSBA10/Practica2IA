@@ -37,8 +37,6 @@ class SearchProblem:
 # BFS — Búsqueda en Anchura
 # ===========================================================================
 
-def nullHeuristic(state, problem=None):
-    return 0
 
 def breadthFirstSearch(problem):
     """
@@ -173,7 +171,6 @@ def breadthFirstSearchTree(problem, max_iter=10000):
 # ===========================================================================
 # UCS — Búsqueda de Costo Uniforme
 # ===========================================================================
-
 def uniformCostSearch(problem):
     """
     UCS: usa PriorityQueue por costo acumulado g(n).
@@ -181,11 +178,16 @@ def uniformCostSearch(problem):
     """
     frontera = util.PriorityQueue()
     best_g = {}
+    expandidos = 0
+    generados = 0
 
     inicio = problem.getStartState()
+    inicio_tiempo = time.time()
+
     if problem.isGoalState(inicio):
         return []
 
+    # Insertar: (estado, camino, costo_acumulado), prioridad = g
     frontera.push((inicio, [], 0), 0)
     best_g[inicio] = 0
 
@@ -195,17 +197,26 @@ def uniformCostSearch(problem):
         if g > best_g.get(estado, float("inf")):
             continue
 
+        expandidos += 1
+
         if problem.isGoalState(estado):
-            return camino
+            tiempo_total = time.time() - inicio_tiempo
+            return {
+                "Camino": camino,
+                "Costo": g,
+                "Expandidos": expandidos,
+                "Generados": generados,
+                "Tiempo": tiempo_total,
+            }
 
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
+            generados += 1
             nuevo_g = g + step_cost
             if nuevo_g < best_g.get(sucesor, float("inf")):
                 best_g[sucesor] = nuevo_g
                 frontera.push((sucesor, camino + [accion], nuevo_g), nuevo_g)
 
-    return []
-
+    return None
 
 def uniformCostSearchStats(problem):
     """
@@ -280,6 +291,18 @@ def heuriticaManhattan(state, problem=None):
         distancia += abs(fila_actual - fila_meta) + abs(columna_actual - columna_meta)
     return distancia
 
+#Heuristica para el problema de desarrolladores 
+def heuristica_desarrolladores(state, problem=None):
+    dev_izq, bugs_izq, vehiculo = state
+    #Verifica si ya esta en la meta
+    if dev_izq == 0 and bugs_izq == 0:
+        return 0
+    #Costos minimo 
+    costo_estimado = (dev_izq * 2) + (bugs_izq * 1)
+
+    if vehiculo == 1:
+        costo_estimado += 1
+    return costo_estimado
 
 
 
@@ -352,41 +375,38 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     return None
 
 def bestFirstSearch(problem, heuristic=nullHeuristic):
+    """
+    Greedy Best-First Search modificado para la comparativa.
+    Evalúa solo h(n), pero rastrea el costo real g(n) para el reporte final.
+    """
     frontera = util.PriorityQueue()
-    visitados= set() #Almacena los estados visitados
+    visitados = set()
     expandidos = 0
     generados = 0
-    #Estado inicila
+
     inicio = problem.getStartState()
     inicio_tiempo = time.time()
+    
     if problem.isGoalState(inicio):
         return []
-    # A diferencia de A* solo utilizamos la heuristica
+
     h0 = heuristic(inicio, problem)
-    f0 = h0
-
-    print("\n=== Inicio de Best First Search ===")
-    print(f"Estado inicial: {inicio} | h(n): {h0} f(n): {f0}\n")
-
-    frontera.push((inicio, []), f0)
+    frontera.push((inicio, [], 0), h0)
 
     while not frontera.isEmpty():
-        estado, camino = frontera.pop()
-        #Evitamos usar estados visitados 
+        estado, camino, g = frontera.pop()
+
         if estado in visitados:
             continue
         visitados.add(estado)
 
         expandidos += 1
-        #verificasmos si es solucion
+
         if problem.isGoalState(estado):
-            #print(f"Nodos expandidos: {expandidos}")
-            #h_final = heuristic(estado, problem)
-            #print(f"Estado final: {estado} | costo real g(n): {g} h(n): {h_final} f(n): {h_final}\n")
             tiempo_total = time.time() - inicio_tiempo
             return {
                 "Camino": camino,
-                "Costo": len(camino),
+                "Costo": g, # Costo real acumulado, no el número de pasos
                 "Expandidos": expandidos,
                 "Generados": generados,
                 "Tiempo": tiempo_total,
@@ -395,10 +415,10 @@ def bestFirstSearch(problem, heuristic=nullHeuristic):
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
             generados += 1
             if sucesor not in visitados:
-                #nuevo_g = g + step_cost
-                h = heuristic(sucesor, problem) #Calcula la heuristica
-                f = h # Solo iteractua la heuristica a diferencia de A*
-                frontera.push((sucesor, camino + [accion]), f )
+                nuevo_g = g + step_cost
+                h = heuristic(sucesor, problem) 
+                # La prioridad sigue siendo SÓLO la heurística (Greedy)
+                frontera.push((sucesor, camino + [accion], nuevo_g), h)
 
     return None
 
@@ -416,6 +436,29 @@ def imprimir_solucion(problem, acciones):
                 break
 
     print(f"\nMeta alcanzada: {estado}")
+
+def imprimir_paso_a_paso(problem, acciones):
+    """
+    Imprime el recorrido estado por estado desde el inicio hasta la meta.
+    """
+    if not acciones:
+        print("No se encontro un camino")
+        return
+
+    estado_actual = problem.getStartState()
+    print(f"Estado Inicial: {estado_actual}")
+    costo_acumulado = 0
+
+    for i, accion in enumerate(acciones, 1):
+        for sucesor, acc, costo in problem.getSuccessors(estado_actual):
+            if acc == accion:
+                costo_acumulado += costo
+                print(f"Paso {i:02d} | Accion: {accion} (Costo: {costo})")
+                print(f"          {estado_actual} -> {sucesor} | Costo Acumulado: {costo_acumulado}")
+                estado_actual = sucesor
+                break
+
+    print(f"\nMeta Alcanzada: {estado_actual} con costo final de {costo_acumulado}")
 
 # ===========================================================================
 # DLS — Depth-Limited Search (búsqueda en profundidad con límite)
