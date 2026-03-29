@@ -4,6 +4,8 @@
 # DFS, BFS, UCS, A*, DLS, IDDFS
 # Incluye variantes: grafo (con visitados), árbol (sin visitados),
 # e instrumentadas (con contadores nodos_generados / nodos_expandidos).
+import math
+import time
 
 import util
 
@@ -31,62 +33,12 @@ class SearchProblem:
         raise NotImplementedError
 
 
-#DFS con nodos 
-def depthFirstSearch(problem):
-    """
-    DFS: usa Stack (LIFO). No garantiza optimalidad.
-    Graph Search: usa visitados para evitar ciclos.
-    """
-    frontera = util.Stack()
-    visitados = set()
-    nodos_generados = 0
-    nodos_expandidos = 0
+# ===========================================================================
+# BFS — Búsqueda en Anchura
+# ===========================================================================
 
-    inicio = problem.getStartState()
-    frontera.push((inicio, []))  # (estado, camino)
-    
-
-
-    while not frontera.isEmpty():
-        estado, camino = frontera.pop()
-        #Aumentar los nodos expandidos al realizar pop
-        nodos_expandidos += 1
-
-        if problem.isGoalState(estado):
-            return camino, nodos_generados, nodos_expandidos
-
-        if estado in visitados:
-            continue
-        visitados.add(estado)
-
-        for sucesor, accion, costo in problem.getSuccessors(estado):
-            if sucesor not in visitados:
-                frontera.push((sucesor, camino + [accion]))
-                nodos_generados += 1
-
-
-    return [], nodos_generados, nodos_expandidos
-"""
-    implementacion con DFS usando, un arbol sin visitados  
-"""
-def sin_visitados_dfs(problem):
-    frontera = util.Stack()
-    inicio = problem.getStartState()
-    frontera.push((inicio, []))
-    nodos_generados = 0
-    nodos_expandidos = 0
-
-    while not frontera.isEmpty():
-        estado, camino = frontera.pop()
-        nodos_expandidos += 1
-        if problem.isGoalState(estado):
-            return camino, nodos_generados, nodos_expandidos
-        for sucesor, accion, costo in problem.getSuccessors(estado):
-            frontera.push((sucesor, camino + [accion]))
-            nodos_generados += 1
-   
-    return [], nodos_generados, nodos_expandidos
-
+def nullHeuristic(state, problem=None):
+    return 0
 
 def breadthFirstSearch(problem):
     """
@@ -95,9 +47,6 @@ def breadthFirstSearch(problem):
     """
     frontera = util.Queue()
     visitados = set()
-    nodos_generados = 0
-    nodos_expandidos = 0 
-
     inicio = problem.getStartState()
     if problem.isGoalState(inicio):
         return []
@@ -107,22 +56,47 @@ def breadthFirstSearch(problem):
 
     while not frontera.isEmpty():
         estado, camino = frontera.pop()
-        nodos_expandidos += 1
 
         if problem.isGoalState(estado):
-            return camino, nodos_generados, nodos_expandidos
+            return camino
 
         for sucesor, accion, costo in problem.getSuccessors(estado):
             if sucesor not in visitados:
                 visitados.add(sucesor)
                 frontera.push((sucesor, camino + [accion]))
-                nodos_generados += 1
-
-    return [],nodos_generados, nodos_expandidos
+    return []
 
 # ===========================================================================
 # DFS — Búsqueda en Profundidad
 # ===========================================================================
+
+def depthFirstSearch(problem):
+    """
+    DFS grafo: usa Stack (LIFO). Usa visitados para evitar ciclos.
+    No garantiza optimalidad.
+    """
+    frontera = util.Stack()
+    visitados = set()
+
+    inicio = problem.getStartState()
+    frontera.push((inicio, []))
+
+    while not frontera.isEmpty():
+        estado, camino = frontera.pop()
+
+        if problem.isGoalState(estado):
+            return camino
+
+        if estado in visitados:
+            continue
+        visitados.add(estado)
+
+        for sucesor, accion, costo in problem.getSuccessors(estado):
+            if sucesor not in visitados:
+                frontera.push((sucesor, camino + [accion]))
+
+    return []
+
 
 # BFS grafo con contadores
 # Retornamos(acciones, nodos_generados, nodos_expandidos, termino).
@@ -238,11 +212,13 @@ def uniformCostSearchStats(problem):
     UCS con contadores.
     Retorna (acciones, nodos_generados, nodos_expandidos, termino).
     """
+    # cola de prioridad
     frontera = util.PriorityQueue()
+    # GUarda el mejor costo conocido
     best_g = {}
     nodos_generados = 0
     nodos_expandidos = 0
-
+    # Estado iniciol del problema
     inicio = problem.getStartState()
     if problem.isGoalState(inicio):
         return [], 0, 0, True
@@ -260,7 +236,8 @@ def uniformCostSearchStats(problem):
         nodos_expandidos += 1
 
         if problem.isGoalState(estado):
-            return camino, nodos_generados, nodos_expandidos
+            print("UCS nodos expandidos: ", nodos_expandidos, " Nodos generados: ", nodos_generados)
+            return camino, nodos_generados, nodos_expandidos, True
 
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
             nuevo_g = g + step_cost
@@ -269,52 +246,176 @@ def uniformCostSearchStats(problem):
                 frontera.push((sucesor, camino + [accion], nuevo_g), nuevo_g)
                 nodos_generados += 1
 
-    return [], nodos_generados, nodos_expandidos
+    return [], nodos_generados, nodos_expandidos, False
 
 
 # ===========================================================================
 # A* — Búsqueda A Estrella
 # ===========================================================================
-
+#Heuristica null
 def nullHeuristic(state, problem=None):
+    return 0
+
+#Heuristica para el problema 8Puzle
+def heuristicaFueraLugar(state, problem=None):
+    fueraLugar = 0
+    #Con enumerate da la iteracion del for con el valor de la pos y el valor que esta en esa pos
+    for i , valor in enumerate(state): #Se itera con la pos con el valor
+        if valor != 0:
+            if (valor-1) != i: # si esta mal
+                fueraLugar += 1 #Se suma uno
+    return fueraLugar
+
+
+
+def heuriticaManhattan(state, problem=None):
+    distancia = 0
+    for i, valor in enumerate(state):
+        if valor == 0:
+            continue
+        fila_actual = i // 3
+        columna_actual = i % 3
+        fila_meta = (valor -1) // 3
+        columna_meta = (valor -1 ) % 3
+        distancia += abs(fila_actual - fila_meta) + abs(columna_actual - columna_meta)
+    return distancia
+
+
+
+
+def heuristicaDesarrolladores(state, problem=None):
+    dev_izq, bugs_izq, _ = state
+    return (2 * dev_izq) + bugs_izq
+
+
+def heuristicaDesa(state, problem=None):
+    
     return 0
 
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """
-    A*: usa PriorityQueue con f(n) = g(n) + h(n).
-    Óptimo si h es admisible (y consistente).
-    """
-    frontera = util.PriorityQueue()
-    best_g = {}
-
+    frontera = util.PriorityQueue() #Cola de prioridad
+    best_g = {} #Guardara el mejor costo
+    expandidos = 0
+    generados = 0
+    #Estado inicial
     inicio = problem.getStartState()
+    inicio_tiempo = time.time()
+    #Verifica si ya es solucion 
     if problem.isGoalState(inicio):
         return []
-
+    #Costos iniciales 
     g0 = 0
-    f0 = g0 + heuristic(inicio, problem)
+    h0 = heuristic(inicio, problem)
+    f0 = g0 + h0
+
+    print("\n=== INICIO A* ===")
+    print(f"Estado inicial: {inicio} | g(n): {g0} h(n): {h0} f(n): {f0}\n")
+    
+    # Insertar en la frontera: (estado, camino, costo)
     frontera.push((inicio, [], g0), f0)
+    #Guarda mejor costo del inicio
     best_g[inicio] = g0
 
     while not frontera.isEmpty():
+        # Sacar el estado con menor f(n)
         estado, camino, g = frontera.pop()
 
         if g > best_g.get(estado, float("inf")):
             continue
 
+        expandidos += 1
+        #verificamos si es solucion 
         if problem.isGoalState(estado):
-            return camino
-
+            print(f"Nodos expandidos: {expandidos}")
+            print(f"Estado final: {estado} | g(n): {g0} h(n): {h0} f(n): {f0}\n")
+            tiempo_total = time.time() - inicio_tiempo
+            return {
+                "Camino": camino,
+                "Costo": g,
+                "Expandidos": expandidos,
+                "Generados": generados,
+                "Tiempo": tiempo_total,
+            }
+            #return camino
+        #Expandir los nodos sucesores
         for sucesor, accion, step_cost in problem.getSuccessors(estado):
+            generados += 1
             nuevo_g = g + step_cost
+            #Verifica si es un mejor camino
             if nuevo_g < best_g.get(sucesor, float("inf")):
                 best_g[sucesor] = nuevo_g
-                nuevo_f = nuevo_g + heuristic(sucesor, problem)
-                frontera.push((sucesor, camino + [accion], nuevo_g), nuevo_f)
+                h = heuristic(sucesor, problem) #Calcula la heuristica 
+                f = nuevo_g + h #Realiza la operacion para obtener el mejor conston sumando el real con el predicho
+                frontera.push((sucesor, camino + [accion], nuevo_g), f)
 
-    return []
+    return None
 
+def bestFirstSearch(problem, heuristic=nullHeuristic):
+    frontera = util.PriorityQueue()
+    visitados= set() #Almacena los estados visitados
+    expandidos = 0
+    generados = 0
+    #Estado inicila
+    inicio = problem.getStartState()
+    inicio_tiempo = time.time()
+    if problem.isGoalState(inicio):
+        return []
+    # A diferencia de A* solo utilizamos la heuristica
+    h0 = heuristic(inicio, problem)
+    f0 = h0
+
+    print("\n=== Inicio de Best First Search ===")
+    print(f"Estado inicial: {inicio} | h(n): {h0} f(n): {f0}\n")
+
+    frontera.push((inicio, []), f0)
+
+    while not frontera.isEmpty():
+        estado, camino = frontera.pop()
+        #Evitamos usar estados visitados 
+        if estado in visitados:
+            continue
+        visitados.add(estado)
+
+        expandidos += 1
+        #verificasmos si es solucion
+        if problem.isGoalState(estado):
+            #print(f"Nodos expandidos: {expandidos}")
+            #h_final = heuristic(estado, problem)
+            #print(f"Estado final: {estado} | costo real g(n): {g} h(n): {h_final} f(n): {h_final}\n")
+            tiempo_total = time.time() - inicio_tiempo
+            return {
+                "Camino": camino,
+                "Costo": len(camino),
+                "Expandidos": expandidos,
+                "Generados": generados,
+                "Tiempo": tiempo_total,
+            }
+
+        for sucesor, accion, step_cost in problem.getSuccessors(estado):
+            generados += 1
+            if sucesor not in visitados:
+                #nuevo_g = g + step_cost
+                h = heuristic(sucesor, problem) #Calcula la heuristica
+                f = h # Solo iteractua la heuristica a diferencia de A*
+                frontera.push((sucesor, camino + [accion]), f )
+
+    return None
+
+def imprimir_solucion(problem, acciones):
+    estado = problem.getStartState()
+    print("\n=== Ejemplo ===")
+    print(f"Inicio: {estado}")
+
+    for i, accion in enumerate(acciones, 1):
+        for sucesor, acc, _ in problem.getSuccessors(estado):
+            if acc == accion:
+                print(f"{i:02d}. {accion}")
+                print(f"    {estado} → {sucesor}")
+                estado = sucesor
+                break
+
+    print(f"\nMeta alcanzada: {estado}")
 
 # ===========================================================================
 # DLS — Depth-Limited Search (búsqueda en profundidad con límite)
@@ -413,9 +514,9 @@ def iterativeDeepeningSearchStats(problem, max_depth=50):
         total_gen += gen
         total_exp += exp
         if result is not None:
-            return result, total_gen, total_exp#, True
+            return result, total_gen, total_exp, True
 
-    return [], total_gen, total_exp#, False
+    return [], total_gen, total_exp, False
 
 
 # ===========================================================================
@@ -461,11 +562,9 @@ def iterativeDeepeningSearchNoCycleCheck(problem, max_depth=50):
 # Alias para compatibilidad
 # ===========================================================================
 dfs = depthFirstSearch
-dfs_sin = sin_visitados_dfs
 bfs = breadthFirstSearch
-#ucs = uniformCostSearch
-ucs = uniformCostSearchStats
+ucs = uniformCostSearch
 astar = aStarSearch
+bestfs = bestFirstSearch
 dls = depthLimitedSearch
-#iddfs = iterativeDeepeningSearch
-iddfs = iterativeDeepeningSearchStats
+iddfs = iterativeDeepeningSearch
