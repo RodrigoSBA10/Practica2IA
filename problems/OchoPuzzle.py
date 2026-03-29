@@ -14,12 +14,12 @@ class OchoPuzzle:
 
     # Genera los sucesres validos, cada sucesor es un tupla (nuevo_estado, accion, costo)
     def getSuccessors(self, state):
-        sucesores = []
+        sucesores = [] #Lista para almacenar los sucesores
         # Lista mas facil de manipular
         lista = list(state)
         vacio = lista.index(0) #Almacena la pos del valor 0
         fila = vacio // 3 #La divicion con la parte entera 
-        col = vacio % 3 
+        col = vacio % 3 #Obtenemos el modulo 3 de vacio
         movimientos = []
         if fila > 0:
             movimientos.append((-1, 0, "Mov. Arriba"))
